@@ -6,6 +6,7 @@
   "author": "Ryan Bosinger",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.17.1",
     "leaflet": "^1.7.1"
   }
 }
