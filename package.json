@@ -5,8 +5,19 @@
   "main": "index.js",
   "author": "Ryan Bosinger",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.17.1",
-    "leaflet": "^1.7.1"
+    "leaflet": "^1.7.1",
+    "telnet-client": "^1.4.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
   }
 }
