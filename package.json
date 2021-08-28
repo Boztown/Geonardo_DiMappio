@@ -4,5 +4,8 @@
   "description": "A tool to help simulate GPS with the Android Emulator.",
   "main": "index.js",
   "author": "Ryan Bosinger",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "leaflet": "^1.7.1"
+  }
 }
