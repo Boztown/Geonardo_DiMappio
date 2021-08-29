@@ -2,6 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+var cors = require("cors");
 const path = require("path");
 const app = express();
 const port = 1235;
@@ -35,6 +36,7 @@ socket.connect(5554, "127.0.0.1", () => {
 
 app.use(express.static("dist"));
 app.use(express.json());
+app.use(cors());
 
 app.post("/", function (req, res) {
   console.log("body:", req.body);
