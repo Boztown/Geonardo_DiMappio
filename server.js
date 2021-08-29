@@ -9,8 +9,26 @@ const Telnet = require("telnet-client");
 
 const net = require("net");
 const socket = new net.Socket();
-socket.on("error", (err) => console.log(err));
+
+socket.on("error", (err) => {
+  switch (err.code) {
+    case "ECONNREFUSED":
+      console.log(
+        `Error! Can't connect to Android Emulator via telnet using ${err.address}:${err.port}. Is the emulator running?`
+      );
+      break;
+
+    default:
+      console.log(
+        "Error! Geonardo is having trouble getting started. Error message:"
+      );
+      console.log(JSON.stringify(err));
+      break;
+  }
+});
+
 socket.on("data", (data) => console.log(data.toString()));
+
 socket.connect(5554, "127.0.0.1", () => {
   socket.write("auth 3Y3NFY89DIIDK5DB\r\n");
 });
