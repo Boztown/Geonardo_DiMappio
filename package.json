@@ -1,5 +1,5 @@
 {
-  "name": "GeonardoDiMappio",
+  "name": "geonardo_dimappio",
   "version": "0.0.1",
   "description": "A tool to help simulate GPS with the Android Emulator.",
   "main": "index.js",
