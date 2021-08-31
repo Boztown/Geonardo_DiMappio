@@ -7,13 +7,24 @@ const path = require("path");
 const app = express();
 const port = 1235;
 const Telnet = require("telnet-client");
-
 const net = require("net");
-const socket = new net.Socket();
+
+const config = {
+  telnetHost: "127.0.0.1",
+  telnetPort: "5554",
+};
 
 module.exports = function (options) {
-  console.log("Settings: ", options);
+  if (options.telnetHost) {
+    config.telnetHost = options.telnetHost;
+  }
+
+  if (options.telnetPort) {
+    config.telnetPort = options.telnetPort;
+  }
 };
+
+const socket = new net.Socket();
 
 socket.on("error", (err) => {
   switch (err.code) {
@@ -34,7 +45,7 @@ socket.on("error", (err) => {
 
 socket.on("data", (data) => console.log(data.toString()));
 
-socket.connect(5554, "127.0.0.1", () => {
+socket.connect(config.telnetPort, config.telnetHost, () => {
   socket.write("auth 3Y3NFY89DIIDK5DB\r\n");
 });
 

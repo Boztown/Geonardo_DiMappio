@@ -5,4 +5,4 @@ const argv = yargs(hideBin(process.argv)).argv;
 
 console.log("YARGS!", argv);
 
-var server = require("../server.js")({ host: "localhorse" });
+var server = require("../server.js")(argv);
