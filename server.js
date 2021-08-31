@@ -11,6 +11,10 @@ const Telnet = require("telnet-client");
 const net = require("net");
 const socket = new net.Socket();
 
+module.exports = function (options) {
+  console.log("Settings: ", options);
+};
+
 socket.on("error", (err) => {
   switch (err.code) {
     case "ECONNREFUSED":

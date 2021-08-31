@@ -1,4 +1,8 @@
 #! /usr/bin/env node
-console.log("console.log output");
+const yargs = require("yargs/yargs");
+const { hideBin } = require("yargs/helpers");
+const argv = yargs(hideBin(process.argv)).argv;
 
-require("../server.js");
+console.log("YARGS!", argv);
+
+var server = require("../server.js")({ host: "localhorse" });

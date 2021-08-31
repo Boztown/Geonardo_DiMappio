@@ -16,7 +16,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "leaflet": "^1.7.1",
-    "telnet-client": "^1.4.9"
+    "telnet-client": "^1.4.9",
+    "yargs": "^17.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"
