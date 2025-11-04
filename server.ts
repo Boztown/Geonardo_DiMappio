@@ -2,8 +2,6 @@ import cors from "cors";
 import express from "express";
 import net from "net";
 
-const app = express();
-
 const configDefaults = {
   serverPort: 1235,
   telnetHost: "127.0.0.1",
@@ -18,6 +16,25 @@ const config = {
   androidAuthCode:
     process.env.ANDROID_AUTH_CODE || configDefaults.androidAuthCode,
 };
+
+const app = express();
+app.use(express.static("dist"));
+app.use(express.json());
+app.use(cors());
+
+app.post("/", (req, res) => {
+  const { lon, lat } = req.body;
+  if (typeof lon === "number" && typeof lat === "number") {
+    socket.write(`geo fix ${lon} ${lat}\r\n`);
+    res.send("Got a POST request");
+  } else {
+    res.status(400).send("Invalid coordinates");
+  }
+});
+
+app.listen(config.serverPort, () => {
+  console.log(`Server running at http://localhost:${config.serverPort}`);
+});
 
 const socket = new net.Socket();
 
@@ -43,26 +60,4 @@ socket.on("data", (data: Buffer) => console.log(data.toString()));
 
 socket.connect(Number(config.telnetPort), config.telnetHost, () => {
   socket.write(`auth ${config.androidAuthCode}\r\n`);
-});
-
-app.use(express.static("dist"));
-app.use(express.json());
-app.use(cors());
-
-app.post(
-  "/",
-  (req: import("express").Request, res: import("express").Response) => {
-    console.log("body:", req.body);
-    const { lon, lat } = req.body;
-    if (typeof lon === "number" && typeof lat === "number") {
-      socket.write(`geo fix ${lon} ${lat}\r\n`);
-      res.send("Got a POST request");
-    } else {
-      res.status(400).send("Invalid coordinates");
-    }
-  }
-);
-
-app.listen(config.serverPort, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
 });
