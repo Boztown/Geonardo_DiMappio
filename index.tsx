@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import L, { LatLng } from "leaflet";
 import axios from "axios";
+import L, { LatLng } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { useCallback, useState } from "react";
+import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 
 const SERVER_HOST = "http://localhost:1235";
 
@@ -26,7 +26,7 @@ function LocationMarker({ onClick }: { onClick: (coord: LatLng) => void }) {
   return null;
 }
 
-export default function App() {
+function App() {
   const [currentPointCoord, setCurrentPointCoord] = useState<LatLng | null>(
     null
   );
@@ -61,4 +61,11 @@ export default function App() {
       )}
     </MapContainer>
   );
+}
+
+import { createRoot } from "react-dom/client";
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  const root = createRoot(rootElement);
+  root.render(<App />);
 }
