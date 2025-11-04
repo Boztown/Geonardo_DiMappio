@@ -1,18 +1,19 @@
 import cors from "cors";
 import express from "express";
 import { config } from "./config";
-import { initializeSocketConnection } from "./socket";
+import { TelnetSocket } from "./socket";
 
 const app = express();
 app.use(express.static("dist"));
 app.use(express.json());
 app.use(cors());
-const socket = initializeSocketConnection();
+
+const socket = new TelnetSocket();
 
 app.post("/", (req, res) => {
   const { lon, lat } = req.body;
   if (typeof lon === "number" && typeof lat === "number") {
-    socket.write(`geo fix ${lon} ${lat}\r\n`);
+    socket.send(`geo fix ${lon} ${lat}`);
     res.send("Got a POST request");
   } else {
     res.status(400).send("Invalid coordinates");
