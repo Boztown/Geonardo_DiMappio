@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import net from "net";
+import { initializeSocketConnection } from "./socket";
 
 const configDefaults = {
   serverPort: 1235,
@@ -9,7 +9,7 @@ const configDefaults = {
   androidAuthCode: "3Y3NFY89DIIDK5DB",
 };
 
-const config = {
+export const config = {
   serverPort: process.env.SERVER_PORT || configDefaults.serverPort,
   telnetHost: process.env.TELNET_HOST || configDefaults.telnetHost,
   telnetPort: process.env.TELNET_PORT || configDefaults.telnetPort,
@@ -21,6 +21,7 @@ const app = express();
 app.use(express.static("dist"));
 app.use(express.json());
 app.use(cors());
+const socket = initializeSocketConnection(config);
 
 app.post("/", (req, res) => {
   const { lon, lat } = req.body;
@@ -49,28 +50,4 @@ server.on("error", (err: any) => {
       process.exit(1);
       break;
   }
-});
-
-const socket = new net.Socket();
-
-socket.on("error", (err: any) => {
-  switch (err.code) {
-    case "ECONNREFUSED":
-      console.log(
-        `Error! Can't connect to Android Emulator via telnet using ${
-          err.address ?? "unknown address"
-        }:${err.port ?? "unknown port"}. Is the emulator running?`
-      );
-      break;
-    default:
-      console.log("Error!");
-      console.log(JSON.stringify(err));
-      break;
-  }
-});
-
-socket.on("data", (data: Buffer) => console.log(data.toString()));
-
-socket.connect(Number(config.telnetPort), config.telnetHost, () => {
-  socket.write(`auth ${config.androidAuthCode}\r\n`);
 });
