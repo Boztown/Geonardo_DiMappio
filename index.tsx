@@ -3,6 +3,7 @@ import L, { LatLng } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { useCallback, useState } from "react";
+import { createRoot } from "react-dom/client";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 
 const SERVER_HOST = "http://localhost:1235";
@@ -63,7 +64,7 @@ function App() {
   );
 }
 
-import { createRoot } from "react-dom/client";
+// Initialize the React application
 const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = createRoot(rootElement);
