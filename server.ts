@@ -2,6 +2,8 @@ import cors from "cors";
 import express from "express";
 import net from "net";
 
+const ANDROID_AUTH_CODE = process.env.ANDROID_AUTH_CODE || "3Y3NFY89DIIDK5DB";
+
 const app = express();
 const port = 1235;
 
@@ -47,7 +49,7 @@ socket.on("error", (err: any) => {
 socket.on("data", (data: Buffer) => console.log(data.toString()));
 
 socket.connect(Number(config.telnetPort), config.telnetHost, () => {
-  socket.write("auth 3Y3NFY89DIIDK5DB\r\n");
+  socket.write(`auth ${ANDROID_AUTH_CODE}\r\n`);
 });
 
 app.use(express.static("dist"));
