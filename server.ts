@@ -32,8 +32,23 @@ app.post("/", (req, res) => {
   }
 });
 
-app.listen(config.serverPort, () => {
+const server = app.listen(config.serverPort, () => {
   console.log(`Server running at http://localhost:${config.serverPort}`);
+});
+
+server.on("error", (err: any) => {
+  switch (err.code) {
+    case "EADDRINUSE":
+      console.error(
+        `Port ${config.serverPort} is already in use. Please choose another port.`
+      );
+      process.exit(1);
+      break;
+    default:
+      console.error(err);
+      process.exit(1);
+      break;
+  }
 });
 
 const socket = new net.Socket();
@@ -48,9 +63,7 @@ socket.on("error", (err: any) => {
       );
       break;
     default:
-      console.log(
-        "Error! Geonardo is having trouble getting started. Error message:"
-      );
+      console.log("Error!");
       console.log(JSON.stringify(err));
       break;
   }
