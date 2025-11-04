@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "backend:dev": "bun src/server.ts",
-    "frontend:build": "bun build ./index.html --minify --outdir=dist",
-    "frontend:dev": "bun index.html"
+    "frontend:build": "bun build src/index.html --minify --outdir=dist",
+    "frontend:dev": "bun src/index.html"
   },
   "browserslist": [
     "last 1 Chrome version"
