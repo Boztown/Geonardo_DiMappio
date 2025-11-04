@@ -1,3 +1,6 @@
 dist/
 .cache/
 node_modules/
+geonardo.code-workspace
+.parcel-cache/
+
