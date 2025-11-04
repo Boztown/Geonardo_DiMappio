@@ -2,29 +2,22 @@ import cors from "cors";
 import express from "express";
 import net from "net";
 
-const ANDROID_AUTH_CODE = process.env.ANDROID_AUTH_CODE || "3Y3NFY89DIIDK5DB";
-
 const app = express();
-const port = 1235;
 
-interface Config {
-  telnetHost: string;
-  telnetPort: string;
-}
-
-const config: Config = {
+const configDefaults = {
+  serverPort: 1235,
   telnetHost: "127.0.0.1",
   telnetPort: "5554",
+  androidAuthCode: "3Y3NFY89DIIDK5DB",
 };
 
-export function setConfig(options: Partial<Config>) {
-  if (options.telnetHost) {
-    config.telnetHost = options.telnetHost;
-  }
-  if (options.telnetPort) {
-    config.telnetPort = options.telnetPort;
-  }
-}
+const config = {
+  serverPort: process.env.SERVER_PORT || configDefaults.serverPort,
+  telnetHost: process.env.TELNET_HOST || configDefaults.telnetHost,
+  telnetPort: process.env.TELNET_PORT || configDefaults.telnetPort,
+  androidAuthCode:
+    process.env.ANDROID_AUTH_CODE || configDefaults.androidAuthCode,
+};
 
 const socket = new net.Socket();
 
@@ -49,7 +42,7 @@ socket.on("error", (err: any) => {
 socket.on("data", (data: Buffer) => console.log(data.toString()));
 
 socket.connect(Number(config.telnetPort), config.telnetHost, () => {
-  socket.write(`auth ${ANDROID_AUTH_CODE}\r\n`);
+  socket.write(`auth ${config.androidAuthCode}\r\n`);
 });
 
 app.use(express.static("dist"));
@@ -70,6 +63,6 @@ app.post(
   }
 );
 
-app.listen(port, () => {
+app.listen(config.serverPort, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
