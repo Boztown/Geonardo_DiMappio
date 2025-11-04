@@ -1,8 +1,6 @@
-import axios from "axios";
-import L, { LatLng } from "leaflet";
+import L, { LatLng, Map, TileLayer } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import "leaflet/dist/leaflet.css";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -16,7 +14,7 @@ const SERVER_HOST = "http://localhost:1235";
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-let map: L.Map;
+let map: Map;
 let renderLayers: L.Marker[] = [];
 let currentPointCoord: LatLng;
 
@@ -25,11 +23,11 @@ async function postPoint(coord: LatLng) {
   render();
 
   try {
-    const response = await axios.post(SERVER_HOST, {
-      lon: coord.lng,
-      lat: coord.lat,
-    });
-    console.log("axios res: ", response);
+    // const response = await axios.post(SERVER_HOST, {
+    //   lon: coord.lng,
+    //   lat: coord.lat,
+    // });
+    // console.log("axios res: ", response);
   } catch (error) {
     console.error(error);
   }
@@ -51,12 +49,17 @@ function render() {
 
 if (typeof window !== "undefined") {
   window.onload = () => {
-    map = L.map("map").setView([48.45521397711524, -123.38275390554121], 16);
+    map = L.map("map").setView([51.505, -0.09], 13);
+    const tiles = new TileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }
+    ).addTo(map);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    setTimeout(() => map.invalidateSize(), 1000);
 
     map.on("click", function (e) {
       postPoint(e.latlng);
