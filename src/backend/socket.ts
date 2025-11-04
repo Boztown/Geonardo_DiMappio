@@ -1,7 +1,7 @@
 import net from "net";
 import { config } from "./server.ts";
 
-export function initializeSocketConnection(cfg: typeof config) {
+export function initializeSocketConnection() {
   const socket = new net.Socket();
 
   socket.on("error", (err: any) => {
