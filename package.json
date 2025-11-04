@@ -6,9 +6,9 @@
   "author": "Ryan Bosinger",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server.js",
-    "build:frontend": "bun build index.tsx --outdir=dist --minify && bun run bin/copy-html-for-dist.js",
-    "watch:frontend": "nodemon --watch index.tsx --watch index.html --exec \"bun run build:frontend\""
+    "backend:dev": "bun server.js",
+    "frontend:build": "bun build ./index.html --minify --outdir=dist",
+    "frontend:dev": "bun index.html"
   },
   "browserslist": [
     "last 1 Chrome version"
