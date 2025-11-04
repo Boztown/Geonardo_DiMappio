@@ -24,7 +24,8 @@
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0",
     "telnet-client": "^1.4.11",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
