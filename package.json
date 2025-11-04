@@ -6,7 +6,7 @@
   "author": "Ryan Bosinger",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "bun server.js",
+    "backend:dev": "bun src/server.ts",
     "frontend:build": "bun build ./index.html --minify --outdir=dist",
     "frontend:dev": "bun index.html"
   },
