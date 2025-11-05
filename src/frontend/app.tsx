@@ -11,6 +11,7 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
+import logo from "./img/logo.jpg";
 import { Mode } from "./mode";
 import { AppState, useAppStore } from "./store";
 
@@ -97,7 +98,7 @@ function App() {
   // );
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div id="sidebar" style={{ display: "flex", height: "100vh" }}>
       <div
         style={{
           flex: "0 0 200px",
@@ -105,7 +106,7 @@ function App() {
           padding: "10px",
         }}
       >
-        <h1>Geonardo DiMappio</h1>
+        <img src={logo} alt="Logo" style={{ width: "100%" }} />
         <ModeSelector onSelect={setMode} />
         <ModePanel mode={mode} />
         <DisplayCoordinates coord={currentPointCoord} />
