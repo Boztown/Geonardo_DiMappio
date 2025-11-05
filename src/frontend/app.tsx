@@ -24,6 +24,7 @@ enum Mode {
 }
 
 function App() {
+  const [map, setMap] = useState<L.Map | null>(null);
   const [mode, setMode] = useState<Mode>(Mode.ONE_CLICK);
   const [currentPointCoord, setCurrentPointCoord] = useState<LatLng | null>(
     null
@@ -32,8 +33,22 @@ function App() {
   useEffect(() => {
     if (mode === Mode.FOLLOW_MOUSE) {
       const handleMouseMove = (e: MouseEvent) => {
-        console.log(e);
-        setCurrentPointCoord(new LatLng(e.clientY, e.clientX));
+        const mapElement = document.querySelector(".leaflet-container");
+        if (mapElement) {
+          const rect = mapElement.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          // Convert pixel coordinates to lat/lng using Leaflet
+          // You need access to the Leaflet map instance
+          // We'll use window.L for this quick hack (not recommended for production)
+          // Or you can refactor to use a ref to the map instance
+          // Here is a safe fallback:
+          if (map) {
+            const latlng = map.containerPointToLatLng([x, y]);
+            setCurrentPointCoord(latlng);
+            sendCoords(latlng);
+          }
+        }
       };
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -42,6 +57,10 @@ function App() {
 
   const handleMapClick = useCallback(async (coord: LatLng) => {
     setCurrentPointCoord(coord);
+    sendCoords(coord);
+  }, []);
+
+  async function sendCoords(coord: LatLng) {
     try {
       const response = await axios.post(SERVER_HOST, {
         lon: coord.lng,
@@ -51,7 +70,7 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -71,6 +90,7 @@ function App() {
           center={[51.505, -0.09]}
           zoom={13}
           style={{ height: "100vh", width: "100%" }}
+          ref={setMap}
         >
           <TileLayer
             url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
