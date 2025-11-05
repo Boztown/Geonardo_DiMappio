@@ -87,12 +87,6 @@ function App() {
     }
   }
 
-  // Example encoded polyline string (replace with your own)
-  const encoded = "omzeHdkdqV??";
-  // const polylinePositions: LatLngTuple[] = decodePolyline(encoded).map(
-  //   ([lat, lng]) => [lat, lng]
-  // );
-
   return (
     <div id="sidebar" style={{ display: "flex", height: "100vh" }}>
       <div
@@ -193,7 +187,22 @@ function ModePanelFollowMouse() {
 }
 
 function ModePanelPolyline() {
-  return <Panel>Click on the map to add points to the polyline.</Panel>;
+  const polylinePositions = useAppStore((state) => state.polylinePositions);
+  return (
+    <Panel>
+      <span>Click on the map to add points to the polyline.</span>
+      <hr />
+      <ul style={{ padding: 0, marginLeft: 14 }}>
+        {polylinePositions.map((pos, index) => (
+          <li key={index}>
+            <Monospace>
+              {pos[1].toFixed(4)}, {pos[0].toFixed(4)}
+            </Monospace>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
 }
 
 function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
@@ -219,19 +228,28 @@ function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
 
 function DisplayCoordinates({ coord }: { coord: LatLng | null }) {
   const style: React.CSSProperties = {
-    fontFamily: "monospace",
     textAlign: "center",
   };
 
   if (coord) {
     return (
-      <span style={style}>
+      <Monospace style={style}>
         {coord.lng.toFixed(6)}, {coord.lat.toFixed(6)}
-      </span>
+      </Monospace>
     );
   } else {
-    return <span style={style}>--</span>;
+    return <Monospace style={style}>--</Monospace>;
   }
+}
+
+function Monospace({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
+  return <span style={{ fontFamily: "monospace", ...style }}>{children}</span>;
 }
 
 // Initialize the React application
