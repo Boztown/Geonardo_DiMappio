@@ -105,7 +105,6 @@ function App() {
         <img src={logo} alt="Logo" style={{ width: "100%" }} />
         <ModeSelector onSelect={setMode} />
         <ModePanel mode={mode} />
-        <DisplayCoordinates coord={currentPointCoord} />
       </div>
       <div style={{ flex: 1 }}>
         <MapContainer
@@ -119,7 +118,7 @@ function App() {
             maxZoom={19}
             attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           />
-          <LocationMarker onClick={handleMapClick} />
+          <MapClickHandler onClick={handleMapClick} />
           {currentPointCoord && (
             <Marker position={currentPointCoord} icon={DefaultIcon} />
           )}
@@ -135,7 +134,7 @@ function App() {
   );
 }
 
-function LocationMarker({ onClick }: { onClick: (coord: LatLng) => void }) {
+function MapClickHandler({ onClick }: { onClick: (coord: LatLng) => void }) {
   useMapEvents({
     click(e) {
       onClick(e.latlng);
@@ -157,16 +156,44 @@ function ModePanel({ mode }: { mode: Mode }) {
   }
 }
 
+function Panel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        padding: "10px",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        marginTop: "10px",
+        boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+        fontFamily: "sans-serif",
+        fontSize: 14,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function ModePanelOneClick() {
-  return <div>Click on the map to set a single coordinate.</div>;
+  const currentPointCoord = useAppStore((state) => state.currentPointCoord);
+
+  return (
+    <Panel>
+      <span>Click on the map to set a single coordinate.</span>
+      <hr />
+      <label style={{ fontWeight: "bold" }}>Current Coordinates:</label>
+      <br />
+      <DisplayCoordinates coord={currentPointCoord} />
+    </Panel>
+  );
 }
 
 function ModePanelFollowMouse() {
-  return <div>Move your mouse over the map to update coordinates.</div>;
+  return <Panel>Move your mouse over the map to update coordinates.</Panel>;
 }
 
 function ModePanelPolyline() {
-  return <div>Click on the map to add points to the polyline.</div>;
+  return <Panel>Click on the map to add points to the polyline.</Panel>;
 }
 
 function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
@@ -191,14 +218,19 @@ function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
 }
 
 function DisplayCoordinates({ coord }: { coord: LatLng | null }) {
+  const style: React.CSSProperties = {
+    fontFamily: "monospace",
+    textAlign: "center",
+  };
+
   if (coord) {
     return (
-      <span style={{ fontFamily: "monospace" }}>
+      <span style={style}>
         {coord.lng.toFixed(6)}, {coord.lat.toFixed(6)}
       </span>
     );
   } else {
-    return <span>Click on the map to set coordinates</span>;
+    return <span style={style}>--</span>;
   }
 }
 
