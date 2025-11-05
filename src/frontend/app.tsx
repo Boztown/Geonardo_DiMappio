@@ -12,6 +12,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import { OSRMRouteResponse } from ".";
+import { AnimatedMarker } from "./components/AnimatedMarker";
 import logo from "./img/logo.jpg";
 import { Mode } from "./mode";
 import { decodePolyline } from "./polyline";
@@ -19,7 +20,7 @@ import { useAppStore } from "./store";
 
 const SERVER_HOST = "http://localhost:1235";
 
-const DefaultIcon = L.icon({
+export const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
   iconSize: [25, 41],
@@ -65,6 +66,10 @@ function App() {
       };
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
+    }
+
+    if (store.mode === Mode.POLYLINE && currentPointCoord) {
+      setCurrentPointCoord(null);
     }
   }, [store.mode, store.map, store.setCurrentPointCoord]);
 
@@ -130,6 +135,12 @@ function App() {
             <Polyline positions={polylinePositions} color="blue" />
           )}
           {polyline && <Polyline positions={polyline} />}
+          {mode === Mode.POLYLINE && polyline && (
+            <AnimatedMarker
+              positions={polyline}
+              onPositionChange={(p) => sendCoords(new LatLng(p[0], p[1]))}
+            />
+          )}
         </MapContainer>
       </div>
     </div>
