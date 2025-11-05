@@ -46,22 +46,48 @@ function App() {
   }, []);
 
   return (
-    <MapContainer
-      center={[51.505, -0.09]}
-      zoom={13}
-      style={{ height: "100vh", width: "100%" }}
-    >
-      <TileLayer
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-        attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      />
-      <LocationMarker onClick={handleMapClick} />
-      {currentPointCoord && (
-        <Marker position={currentPointCoord} icon={DefaultIcon} />
-      )}
-    </MapContainer>
+    <div style={{ display: "flex", height: "100vh" }}>
+      <div
+        style={{
+          flex: "0 0 200px",
+          background: "#fff",
+          padding: "10px",
+        }}
+      >
+        <h1>Geonardo DiMappio</h1>
+        <DisplayCoordinates coord={currentPointCoord} />
+      </div>
+      <div style={{ flex: 1 }}>
+        <MapContainer
+          center={[51.505, -0.09]}
+          zoom={13}
+          style={{ height: "100vh", width: "100%" }}
+        >
+          <TileLayer
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
+            attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          />
+          <LocationMarker onClick={handleMapClick} />
+          {currentPointCoord && (
+            <Marker position={currentPointCoord} icon={DefaultIcon} />
+          )}
+        </MapContainer>
+      </div>
+    </div>
   );
+}
+
+function DisplayCoordinates({ coord }: { coord: LatLng | null }) {
+  if (coord) {
+    return (
+      <span style={{ fontFamily: "monospace" }}>
+        {coord.lng.toFixed(6)}, {coord.lat.toFixed(6)}
+      </span>
+    );
+  } else {
+    return <span>Click on the map to set coordinates</span>;
+  }
 }
 
 // Initialize the React application
