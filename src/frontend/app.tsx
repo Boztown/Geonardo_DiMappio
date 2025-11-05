@@ -2,7 +2,7 @@ import axios from "axios";
 import L, { LatLng } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 
@@ -18,19 +18,27 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function LocationMarker({ onClick }: { onClick: (coord: LatLng) => void }) {
-  useMapEvents({
-    click(e) {
-      onClick(e.latlng);
-    },
-  });
-  return null;
+enum Mode {
+  ONE_CLICK = "one_click",
+  FOLLOW_MOUSE = "follow_mouse",
 }
 
 function App() {
+  const [mode, setMode] = useState<Mode>(Mode.ONE_CLICK);
   const [currentPointCoord, setCurrentPointCoord] = useState<LatLng | null>(
     null
   );
+
+  useEffect(() => {
+    if (mode === Mode.FOLLOW_MOUSE) {
+      const handleMouseMove = (e: MouseEvent) => {
+        console.log(e);
+        setCurrentPointCoord(new LatLng(e.clientY, e.clientX));
+      };
+      window.addEventListener("mousemove", handleMouseMove);
+      return () => window.removeEventListener("mousemove", handleMouseMove);
+    }
+  }, [mode]);
 
   const handleMapClick = useCallback(async (coord: LatLng) => {
     setCurrentPointCoord(coord);
@@ -55,6 +63,7 @@ function App() {
         }}
       >
         <h1>Geonardo DiMappio</h1>
+        <ModeSelector onSelect={(mode) => setMode(mode)} />
         <DisplayCoordinates coord={currentPointCoord} />
       </div>
       <div style={{ flex: 1 }}>
@@ -74,6 +83,35 @@ function App() {
           )}
         </MapContainer>
       </div>
+    </div>
+  );
+}
+
+function LocationMarker({ onClick }: { onClick: (coord: LatLng) => void }) {
+  useMapEvents({
+    click(e) {
+      onClick(e.latlng);
+    },
+  });
+  return null;
+}
+
+function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
+  return (
+    <div>
+      <select
+        onChange={(e) => onSelect(e.target.value as Mode)}
+        style={{
+          width: "100%",
+          padding: "5px",
+          marginBottom: "10px",
+          boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+          borderRadius: "4px",
+        }}
+      >
+        <option value={Mode.ONE_CLICK}>One Click</option>
+        <option value={Mode.FOLLOW_MOUSE}>Follow Mouse</option>
+      </select>
     </div>
   );
 }
