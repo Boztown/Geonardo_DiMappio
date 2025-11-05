@@ -12,6 +12,8 @@ export interface AppState {
   polylinePositions: LatLngTuple[];
   setPolylinePositions: (positions: LatLngTuple[]) => void;
   addPolylinePosition: (position: LatLngTuple) => void;
+  polyline: [number, number][] | null;
+  setPolyline: (polyline: [number, number][] | null) => void;
 }
 
 export const useAppStore = create<AppState>((set, get, store) => ({
@@ -27,4 +29,6 @@ export const useAppStore = create<AppState>((set, get, store) => ({
     set({ polylinePositions: positions }),
   addPolylinePosition: (position: LatLngTuple) =>
     set({ polylinePositions: [...get().polylinePositions, position] }),
+  polyline: null,
+  setPolyline: (polyline: [number, number][] | null) => set({ polyline }),
 }));

@@ -2,6 +2,7 @@ import axios from "axios";
 import cors from "cors";
 import express from "express";
 import { z } from "zod";
+import { OSRMRouteResponse } from "../frontend";
 import { config } from "./config";
 import { TelnetSocket } from "./socket";
 
@@ -39,8 +40,8 @@ const RouteRequestSchema = z.object({
   ),
 });
 
-app.get("/route", async (req, res) => {
-  const parseResult = RouteRequestSchema.safeParse(req.query);
+app.post("/route", async (req, res) => {
+  const parseResult = RouteRequestSchema.safeParse(req.body);
   if (!parseResult.success) {
     res.status(400).send("Invalid route request");
     return;
@@ -50,8 +51,8 @@ app.get("/route", async (req, res) => {
     .map((coord) => `${coord.lng},${coord.lat}`)
     .join(";");
 
-  const result = await axios.get(
-    `http://router.project-osrm.org/route/v1/driving/${formattedCoords}?overview=false&geometries=polyline`
+  const result = await axios.get<OSRMRouteResponse>(
+    `http://router.project-osrm.org/route/v1/driving/${formattedCoords}?overview=full&geometries=polyline`
   );
 
   res.send(result.data);

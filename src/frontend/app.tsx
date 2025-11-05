@@ -11,8 +11,10 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
+import { OSRMRouteResponse } from ".";
 import logo from "./img/logo.jpg";
 import { Mode } from "./mode";
+import { decodePolyline } from "./polyline";
 import { useAppStore } from "./store";
 
 const SERVER_HOST = "http://localhost:1235";
@@ -38,6 +40,7 @@ function App() {
     setCurrentPointCoord,
     polylinePositions,
     addPolylinePosition,
+    polyline,
   } = store;
 
   useEffect(() => {
@@ -122,6 +125,7 @@ function App() {
           {polylinePositions.length > 1 && (
             <Polyline positions={polylinePositions} color="blue" />
           )}
+          {polyline && <Polyline positions={polyline} />}
         </MapContainer>
       </div>
     </div>
@@ -188,6 +192,28 @@ function ModePanelFollowMouse() {
 
 function ModePanelPolyline() {
   const polylinePositions = useAppStore((state) => state.polylinePositions);
+  const setPolyline = useAppStore((state) => state.setPolyline);
+
+  async function onClickHandler() {
+    try {
+      const response = await axios.post<OSRMRouteResponse>(
+        SERVER_HOST + "/route",
+        {
+          coords: polylinePositions.map((pos) => ({
+            lng: pos[1],
+            lat: pos[0],
+          })),
+        }
+      );
+      console.log("axios res: ", response);
+      const decodedPolyline = decodePolyline(response.data.routes[0].geometry);
+      console.log("decodedPolyline: ", decodedPolyline);
+      setPolyline(decodedPolyline);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Panel>
       <span>Click on the map to add points to the polyline.</span>
@@ -201,6 +227,9 @@ function ModePanelPolyline() {
           </li>
         ))}
       </ul>
+      {polylinePositions.length ? (
+        <button onClick={onClickHandler}>Submit</button>
+      ) : null}
     </Panel>
   );
 }
