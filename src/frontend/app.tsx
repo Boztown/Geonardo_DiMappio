@@ -13,7 +13,7 @@ import {
 } from "react-leaflet";
 import logo from "./img/logo.jpg";
 import { Mode } from "./mode";
-import { AppState, useAppStore } from "./store";
+import { useAppStore } from "./store";
 
 const SERVER_HOST = "http://localhost:1235";
 
@@ -28,24 +28,20 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 function App() {
-  const map = useAppStore((s: AppState) => s.map);
-  const setMap = useAppStore((s: AppState) => s.setMap);
-  const mode = useAppStore((s: AppState) => s.mode);
-  const setMode = useAppStore((s: AppState) => s.setMode);
-  const currentPointCoord = useAppStore((s: AppState) => s.currentPointCoord);
-  const setCurrentPointCoord = useAppStore(
-    (s: AppState) => s.setCurrentPointCoord
-  );
-  const polylinePositions = useAppStore((s: AppState) => s.polylinePositions);
-  const setPolylinePositions = useAppStore(
-    (s: AppState) => s.setPolylinePositions
-  );
-  const addPolylinePosition = useAppStore(
-    (s: AppState) => s.addPolylinePosition
-  );
+  const store = useAppStore();
+  const {
+    map,
+    setMap,
+    mode,
+    setMode,
+    currentPointCoord,
+    setCurrentPointCoord,
+    polylinePositions,
+    addPolylinePosition,
+  } = store;
 
   useEffect(() => {
-    if (mode === Mode.FOLLOW_MOUSE) {
+    if (store.mode === Mode.FOLLOW_MOUSE) {
       let lastCall = 0;
       const throttleMs = 0;
       const handleMouseMove = (e: MouseEvent) => {
@@ -65,7 +61,7 @@ function App() {
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
     }
-  }, [mode, map, setCurrentPointCoord]);
+  }, [store.mode, store.map, store.setCurrentPointCoord]);
 
   const handleMapClick = useCallback(
     async (coord: LatLng) => {

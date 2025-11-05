@@ -24,7 +24,9 @@ app.post("/", (req, res) => {
     return;
   }
   const { lon, lat } = parseResult.data;
-  socket.send(`geo fix ${lon} ${lat} 1 10`);
+  const cmd = `geo fix ${lon} ${lat}`;
+  console.log("Sending command to telnet:", cmd);
+  socket.send(cmd);
   res.status(200).send();
 });
 
