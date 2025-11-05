@@ -41,6 +41,8 @@ function App() {
     polylinePositions,
     addPolylinePosition,
     polyline,
+    showPolylinePositions,
+    setShowPolylinePositions,
   } = store;
 
   useEffect(() => {
@@ -73,6 +75,7 @@ function App() {
         sendCoords(coord);
       }
       if (mode === Mode.POLYLINE) {
+        setShowPolylinePositions(true);
         addPolylinePosition([coord.lat, coord.lng]);
       }
     },
@@ -119,10 +122,11 @@ function App() {
           {currentPointCoord && (
             <Marker position={currentPointCoord} icon={DefaultIcon} />
           )}
-          {polylinePositions.map((position: LatLngTuple, index: number) => (
-            <Marker key={index} position={position} icon={DefaultIcon} />
-          ))}
-          {polylinePositions.length > 1 && (
+          {showPolylinePositions &&
+            polylinePositions.map((position: LatLngTuple, index: number) => (
+              <Marker key={index} position={position} icon={DefaultIcon} />
+            ))}
+          {showPolylinePositions && polylinePositions.length > 1 && (
             <Polyline positions={polylinePositions} color="blue" />
           )}
           {polyline && <Polyline positions={polyline} />}
@@ -196,6 +200,9 @@ function ModePanelPolyline() {
     (state) => state.setPolylinePositions
   );
   const setPolyline = useAppStore((state) => state.setPolyline);
+  const setShowPolylinePositions = useAppStore(
+    (state) => state.setShowPolylinePositions
+  );
 
   async function onClickSubmitHandler() {
     try {
@@ -208,10 +215,9 @@ function ModePanelPolyline() {
           })),
         }
       );
-      console.log("axios res: ", response);
       const decodedPolyline = decodePolyline(response.data.routes[0].geometry);
-      console.log("decodedPolyline: ", decodedPolyline);
       setPolyline(decodedPolyline);
+      setShowPolylinePositions(false);
     } catch (error) {
       console.error(error);
     }
