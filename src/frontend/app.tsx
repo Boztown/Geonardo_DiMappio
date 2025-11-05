@@ -108,6 +108,7 @@ function App() {
       >
         <h1>Geonardo DiMappio</h1>
         <ModeSelector onSelect={(mode) => setMode(mode)} />
+        <ModePanel mode={mode} />
         <DisplayCoordinates coord={currentPointCoord} />
       </div>
       <div style={{ flex: 1 }}>
@@ -145,6 +146,31 @@ function LocationMarker({ onClick }: { onClick: (coord: LatLng) => void }) {
     },
   });
   return null;
+}
+
+function ModePanel({ mode }: { mode: Mode }) {
+  switch (mode) {
+    case Mode.ONE_CLICK:
+      return <ModePanelOneClick />;
+    case Mode.FOLLOW_MOUSE:
+      return <ModePanelFollowMouse />;
+    case Mode.POLYLINE:
+      return <ModePanelPolyline />;
+    default:
+      return null;
+  }
+}
+
+function ModePanelOneClick() {
+  return <div>Click on the map to set a single coordinate.</div>;
+}
+
+function ModePanelFollowMouse() {
+  return <div>Move your mouse over the map to update coordinates.</div>;
+}
+
+function ModePanelPolyline() {
+  return <div>Click on the map to add points to the polyline.</div>;
 }
 
 function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
