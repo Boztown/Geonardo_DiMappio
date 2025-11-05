@@ -13,6 +13,7 @@ import {
 } from "react-leaflet";
 import { OSRMRouteResponse } from ".";
 import { AnimatedMarker } from "./components/AnimatedMarker";
+import { LocateButton } from "./components/LocateButton";
 import logo from "./img/logo.jpg";
 import { Mode } from "./mode";
 import { decodePolyline } from "./polyline";
@@ -118,6 +119,7 @@ function App() {
           style={{ height: "100vh", width: "100%" }}
           ref={setMap}
         >
+          <LocateButton />
           <TileLayer
             url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
             maxZoom={19}
