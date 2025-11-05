@@ -1,10 +1,16 @@
 import axios from "axios";
-import L, { LatLng } from "leaflet";
+import L, { LatLng, LatLngTuple } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
 
 const SERVER_HOST = "http://localhost:1235";
 
@@ -21,6 +27,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 enum Mode {
   ONE_CLICK = "one_click",
   FOLLOW_MOUSE = "follow_mouse",
+  POLYLINE = "polyline",
 }
 
 function App() {
@@ -29,23 +36,26 @@ function App() {
   const [currentPointCoord, setCurrentPointCoord] = useState<LatLng | null>(
     null
   );
+  const [polylinePositions, setPolylinePositions] = useState<LatLngTuple[]>([]);
 
   useEffect(() => {
     if (mode === Mode.FOLLOW_MOUSE) {
+      let lastCall = 0;
+      const throttleMs = 0;
+
       const handleMouseMove = (e: MouseEvent) => {
+        const now = Date.now();
+
         const mapElement = document.querySelector(".leaflet-container");
         if (mapElement) {
           const rect = mapElement.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
-          // Convert pixel coordinates to lat/lng using Leaflet
-          // You need access to the Leaflet map instance
-          // We'll use window.L for this quick hack (not recommended for production)
-          // Or you can refactor to use a ref to the map instance
-          // Here is a safe fallback:
           if (map) {
             const latlng = map.containerPointToLatLng([x, y]);
             setCurrentPointCoord(latlng);
+            if (now - lastCall < throttleMs) return;
+            lastCall = now;
             sendCoords(latlng);
           }
         }
@@ -55,22 +65,37 @@ function App() {
     }
   }, [mode]);
 
-  const handleMapClick = useCallback(async (coord: LatLng) => {
-    setCurrentPointCoord(coord);
-    sendCoords(coord);
-  }, []);
+  const handleMapClick = useCallback(
+    async (coord: LatLng) => {
+      if (mode === Mode.ONE_CLICK) {
+        setCurrentPointCoord(coord);
+        sendCoords(coord);
+      }
+
+      if (mode === Mode.POLYLINE) {
+        console.log("Adding polyline point:", coord);
+        setPolylinePositions((prev) => [...prev, [coord.lat, coord.lng]]);
+      }
+    },
+    [mode]
+  );
 
   async function sendCoords(coord: LatLng) {
     try {
-      const response = await axios.post(SERVER_HOST, {
+      await axios.post(SERVER_HOST, {
         lon: coord.lng,
         lat: coord.lat,
       });
-      console.log("axios res: ", response);
     } catch (error) {
       console.error(error);
     }
   }
+
+  // Example encoded polyline string (replace with your own)
+  const encoded = "omzeHdkdqV??";
+  // const polylinePositions: LatLngTuple[] = decodePolyline(encoded).map(
+  //   ([lat, lng]) => [lat, lng]
+  // );
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -100,6 +125,12 @@ function App() {
           <LocationMarker onClick={handleMapClick} />
           {currentPointCoord && (
             <Marker position={currentPointCoord} icon={DefaultIcon} />
+          )}
+          {polylinePositions.map((position, index) => (
+            <Marker key={index} position={position} icon={DefaultIcon} />
+          ))}
+          {polylinePositions.length > 1 && (
+            <Polyline positions={polylinePositions} color="blue" />
           )}
         </MapContainer>
       </div>
@@ -131,6 +162,7 @@ function ModeSelector({ onSelect }: { onSelect: (mode: Mode) => void }) {
       >
         <option value={Mode.ONE_CLICK}>One Click</option>
         <option value={Mode.FOLLOW_MOUSE}>Follow Mouse</option>
+        <option value={Mode.POLYLINE}>Polyline</option>
       </select>
     </div>
   );
