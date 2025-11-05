@@ -192,9 +192,12 @@ function ModePanelFollowMouse() {
 
 function ModePanelPolyline() {
   const polylinePositions = useAppStore((state) => state.polylinePositions);
+  const setPolylinePositions = useAppStore(
+    (state) => state.setPolylinePositions
+  );
   const setPolyline = useAppStore((state) => state.setPolyline);
 
-  async function onClickHandler() {
+  async function onClickSubmitHandler() {
     try {
       const response = await axios.post<OSRMRouteResponse>(
         SERVER_HOST + "/route",
@@ -214,6 +217,11 @@ function ModePanelPolyline() {
     }
   }
 
+  async function onClickResetHandler() {
+    setPolylinePositions([]);
+    setPolyline(null);
+  }
+
   return (
     <Panel>
       <span>Click on the map to add points to the polyline.</span>
@@ -228,7 +236,10 @@ function ModePanelPolyline() {
         ))}
       </ul>
       {polylinePositions.length ? (
-        <button onClick={onClickHandler}>Submit</button>
+        <div>
+          <button onClick={onClickSubmitHandler}>Submit</button>
+          <button onClick={onClickResetHandler}>Reset</button>
+        </div>
       ) : null}
     </Panel>
   );
