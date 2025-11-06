@@ -6,7 +6,8 @@
   "author": "Ryan Bosinger",
   "license": "MIT",
   "scripts": {
-    "dev": "bun run src/index.ts"
+    "dev": "bun run src/index.ts",
+    "compile": "cd src; bun build ./index.ts --compile --outfile ../dist/geonardo"
   },
   "browserslist": [
     "last 1 Chrome version"
