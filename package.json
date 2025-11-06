@@ -6,9 +6,7 @@
   "author": "Ryan Bosinger",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "bun src/backend/server.ts",
-    "frontend:build": "bun build src/frontend/index.html --minify --outdir=dist",
-    "frontend:dev": "bun src/frontend/index.html"
+    "dev": "bun run src/index.ts"
   },
   "browserslist": [
     "last 1 Chrome version"
@@ -29,6 +27,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/leaflet": "^1.9.21",

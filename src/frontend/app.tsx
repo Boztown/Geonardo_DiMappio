@@ -90,7 +90,7 @@ function App() {
 
   async function sendCoords(coord: LatLng) {
     try {
-      await axios.post(SERVER_HOST, {
+      await axios.post("/api/coords", {
         lon: coord.lng,
         lat: coord.lat,
       });
@@ -219,15 +219,12 @@ function ModePanelPolyline() {
 
   async function onClickSubmitHandler() {
     try {
-      const response = await axios.post<OSRMRouteResponse>(
-        SERVER_HOST + "/route",
-        {
-          coords: polylinePositions.map((pos) => ({
-            lng: pos[1],
-            lat: pos[0],
-          })),
-        }
-      );
+      const response = await axios.post<OSRMRouteResponse>("/api/route", {
+        coords: polylinePositions.map((pos) => ({
+          lng: pos[1],
+          lat: pos[0],
+        })),
+      });
       const decodedPolyline = decodePolyline(response.data.routes[0].geometry);
       setPolyline(decodedPolyline);
       setShowPolylinePositions(false);
