@@ -1,4 +1,3 @@
-import axios from "axios";
 import L, { LatLng, LatLngTuple } from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
@@ -90,9 +89,15 @@ function App() {
 
   async function sendCoords(coord: LatLng) {
     try {
-      await axios.post("/api/coords", {
-        lon: coord.lng,
-        lat: coord.lat,
+      await fetch("/api/coords", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lon: coord.lng,
+          lat: coord.lat,
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -219,13 +224,23 @@ function ModePanelPolyline() {
 
   async function onClickSubmitHandler() {
     try {
-      const response = await axios.post<OSRMRouteResponse>("/api/route", {
-        coords: polylinePositions.map((pos) => ({
-          lng: pos[1],
-          lat: pos[0],
-        })),
+      const response = await fetch("/api/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coords: polylinePositions.map((pos) => ({
+            lng: pos[1],
+            lat: pos[0],
+          })),
+        }),
       });
-      const decodedPolyline = decodePolyline(response.data.routes[0].geometry);
+
+      if (!response.ok) throw new Error("Failed to fetch route");
+
+      const data: OSRMRouteResponse = await response.json();
+      const decodedPolyline = decodePolyline(data.routes[0].geometry);
       setPolyline(decodedPolyline);
       setShowPolylinePositions(false);
     } catch (error) {
